@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <style name="dinau" parent="@android:style/Theme.Light">
+    <item name="android:windowNoTitle">true</item>
+  </style>
+</resources>

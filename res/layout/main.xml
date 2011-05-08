@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/parent"
+  android:background="#BFD7E1"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:padding="10dp">
+    <ImageView android:id="@+id/main_logo"
+      android:src="@drawable/logo"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center" />
+    <RelativeLayout android:id="@+id/dinau_messages"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:layout_weight="1">
+        <TextView android:id="@+id/default_message"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:text="@string/default_message"
+          android:textStyle="bold"
+          android:textSize="17dip" />
+        <TextView android:id="@+id/error_message"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:textSize="14dip"
+          android:visibility="gone" />
+        <LinearLayout android:id="@+id/loading"
+          android:orientation="vertical"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:gravity="center"
+          android:visibility="gone">
+            <ProgressBar android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="10dp"
+              android:gravity="center" />
+            <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content" 
+              android:gravity="center"
+              android:textSize="17dip"
+              android:textStyle="bold"
+              android:text="@string/loading" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/results"
+          android:orientation="vertical"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:gravity="center"
+          android:visibility="gone">
+            <TextView android:id="@+id/results_summary"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="10dp"
+              android:gravity="center"
+              android:textSize="30dip"
+              android:textStyle="bold" />
+            <TextView android:id="@+id/results_details"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:textSize="16dip" />
+        </LinearLayout>
+    </RelativeLayout>
+    <TableLayout android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:stretchColumns="0">
+        <TableRow>
+          <EditText android:id="@+id/zip_code_entry"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:hint="@string/zip_code_entry_hint" />
+          <Button android:id="@+id/dinau_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dinau_submit" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
