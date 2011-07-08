@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Do I Need Am Umbrella</string>
+  <string name="app_name">Do I Need An Umbrella?</string>
   <string name="zip_code_entry_hint">Enter zip code</string>
   <string name="dinau_submit">Go</string>
   <string name="submit_empty_zip">You must enter a zip code</string>

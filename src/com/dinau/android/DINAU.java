@@ -33,7 +33,7 @@ public class DINAU extends RoboActivity {
 	public static final int MESSAGES_KEY_LOADING = 2;
 	public static final int MESSAGES_KEY_RESULT = 3;
 	
-	private static final long LOCATION_DELTA_CUTOFF = 1000*60*5; // 5 minutes
+	private static final long LOCATION_DELTA_CUTOFF = 1000*60*15; // 15 minutes
 	
 	private DinauAsyncRequest dinauRequest;
     private int currentView;
@@ -93,6 +93,10 @@ public class DINAU extends RoboActivity {
     	
     	submitButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				if (getZipText() == null) {
+					return;
+				}
+				
 				submitDinauRequest(v);
 			}
 		});
@@ -137,6 +141,7 @@ public class DINAU extends RoboActivity {
     	logoImage.setLayoutParams(params);
     	logoImage.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				zipCode.setText("");
 				startLocationListener();
 			}
 		});
