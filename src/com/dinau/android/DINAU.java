@@ -16,11 +16,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.dinau.android.util.DinauAsyncRequest;
 
 public class DINAU extends RoboActivity {
+	public static final int GEO_MAX_RESULTS = 5;
+	
     @InjectView(R.id.main_logo) 		private ImageView logoImage;
     @InjectView(R.id.zip_code_entry) 	private EditText zipCode;
     @InjectView(R.id.dinau_submit)		private Button submitButton;
@@ -69,14 +70,7 @@ public class DINAU extends RoboActivity {
     
     private void submitDinauRequest(View v) {
     	((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
-    	String zip = getZipText();
-    	
-		if (zip == null) {
-			toast(getString(R.string.submit_empty_zip));
-		}
-		else {
-			doAsyncRequest(zip);
-		}
+    	doAsyncRequest(getZipText());
     }
     
     private void doAsyncRequest(String zip) {
@@ -107,19 +101,16 @@ public class DINAU extends RoboActivity {
     	
     	logoImage.setImageBitmap(bmp);
     	logoImage.setLayoutParams(params);
+    	logoImage.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				zipCode.setText("");
+				doAsyncRequest(null);
+			}
+		});
     }
     
     private String getZipText() {
     	String text = zipCode.getText().toString();
-    	
     	return text == null || text.trim().equals("") ? null : text;
-    }
-    
-    private void toast(String message) {
-    	toast(message, Toast.LENGTH_LONG);
-    }
-    
-    private void toast(String message, int length) {
-    	Toast.makeText(this, message, length).show();
     }
 }

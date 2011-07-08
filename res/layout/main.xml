@@ -75,7 +75,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="number"
+            android:inputType="textPostalAddress"
             android:hint="@string/zip_code_entry_hint" />
           <Button android:id="@+id/dinau_submit"
             android:layout_width="wrap_content"

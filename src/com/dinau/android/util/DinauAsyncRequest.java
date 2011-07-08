@@ -6,18 +6,29 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONObject;
 
 import roboguice.util.RoboAsyncTask;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.dinau.android.DINAU;
 import com.dinau.android.R;
 
 public class DinauAsyncRequest extends RoboAsyncTask<String> {
+	private static final int ZIPCODE_USE_LOCATION_SERVICE = -1;
+	private static final long LOCATION_DELTA_CUTOFF = 1000*60*5; // 5 minutes
+	
 	private static final String MESSAGES_KEY_DEFAULT_MESSAGE = "default_message";
 	private static final String MESSAGES_KEY_ERROR_MESSAGE = "error_message";
 	private static final String MESSAGES_KEY_LOADING = "loading_container";
@@ -28,6 +39,8 @@ public class DinauAsyncRequest extends RoboAsyncTask<String> {
 	private String zipCode;
 	private Context context;
 	private HashMap<String, View> messages;
+	private LocationManager locationManager;
+	private Location currentLocation;
 	
 	public DinauAsyncRequest(Context context, String zipCode, ViewGroup messagesContainer) {
 		this.context = context;
@@ -41,7 +54,30 @@ public class DinauAsyncRequest extends RoboAsyncTask<String> {
 	}
 	
 	public String call() throws Exception {
-		String url = DINAU_BASE_PATH+zipCode;
+		int zip = getZipCode();
+		if (zip == 0) {
+			throw new Exception("Unable to get zip code");
+		}
+		else if (zip == ZIPCODE_USE_LOCATION_SERVICE) {
+			while (currentLocation == null) {}
+			locationManager.removeUpdates(locationListener);
+			Geocoder geo = new Geocoder(context);
+			List<Address> addresses = geo.getFromLocation(
+				currentLocation.getLatitude(), 
+				currentLocation.getLongitude(), 
+				DINAU.GEO_MAX_RESULTS
+			);
+			
+			for (Address address : addresses) {
+				if (address.getPostalCode() != null) {
+					zipCode = address.getPostalCode();
+					zip = getZipCode();
+					break;
+				}
+			}
+		}
+		
+		String url = DINAU_BASE_PATH+zip;
 		
 		HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 		conn.setRequestProperty("User-Agent", System.getProperties().getProperty("http.agent"));
@@ -53,9 +89,12 @@ public class DinauAsyncRequest extends RoboAsyncTask<String> {
 
 	public void onPreExecute() {
 		showMessage(MESSAGES_KEY_LOADING);
+		if (zipCode == null || zipCode.trim().equals("")) {
+			startLocationListener();
+		}
 	}
 	
-	public void onSuccess(String response) {
+	public void onSuccess(String response) {		
 		try {
 			JSONObject json = new JSONObject(response);
 			
@@ -66,16 +105,12 @@ public class DinauAsyncRequest extends RoboAsyncTask<String> {
 			String dinau = json.getString("need");
 			String temp = json.getString("temp");
 			String status = json.getString("status");
-			String period = json.getString("period");
 			String description = json.getString("description");
-			String percent = json.getInt("percent")+"%";
 			
 			String result = context.getString(R.string.dinau_result,
 				temp,
 				status.toLowerCase(),
-				description,
-				period,
-				percent
+				description
 			);
 			
 			showResults(dinau.toUpperCase(), result);
@@ -99,6 +134,83 @@ public class DinauAsyncRequest extends RoboAsyncTask<String> {
 		
 		is.close();
 		return sb.toString();
+	}
+	
+	private int getZipCode() {
+		if (zipCode == null || zipCode.trim().equals("")) {
+			return ZIPCODE_USE_LOCATION_SERVICE;
+		}
+		
+		try {
+			return Integer.parseInt(zipCode);
+		}
+		catch (NumberFormatException e) {
+			return parseZipcodeFromLocation(zipCode);
+		}
+	}
+	
+	private int parseZipcodeFromLocation(String location) {
+    	Geocoder geo = new Geocoder(context);
+    	
+    	try {
+    		String zip;
+    		for (Address address : geo.getFromLocationName(location, DINAU.GEO_MAX_RESULTS)) {
+    			zip = address.getPostalCode();
+    			if (zip != null) {
+    				return Integer.parseInt(zip);
+    			}
+    		}
+    	}
+    	catch (Exception e) {}
+    	
+    	return 0;
+    }
+	
+	private boolean startLocationListener() {
+		if (locationManager == null) {
+			locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		}
+		
+		try {
+			Location lastLocationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			locationListener.onLocationChanged(lastLocationNetwork);
+			if (!isValidLocation(lastLocationNetwork)) {
+				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			}
+			
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+	
+	private LocationListener locationListener = new LocationListener() {
+		public void onLocationChanged(Location location) {
+			if (location != null && isValidLocation(location)) {
+				currentLocation = location;
+			}
+		}
+
+		public void onProviderDisabled(String arg0) {}
+		public void onProviderEnabled(String arg0) {}
+		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
+		
+	};
+	
+	private boolean isValidLocation(Location location) {
+		if (location == null) {
+			return false;
+		}
+		
+		
+		long timeDelta = System.currentTimeMillis() - location.getTime();
+		if (timeDelta <= LOCATION_DELTA_CUTOFF) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	private void showResults(String dinau, String result) {

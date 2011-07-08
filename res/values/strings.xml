@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Do I Need Am Umbrella</string>
-  <string name="zip_code_entry_hint">Zip Code</string>
+  <string name="zip_code_entry_hint">94080, SFO, ...</string>
   <string name="dinau_submit">Go</string>
   <string name="submit_empty_zip">You must enter a zip code</string>
   <string name="loading">Looking at the sky...</string>
-  <string name="default_message">Enter your zip code to get started</string>
-  <string name="dinau_result">It\'s %1$s degrees, %2$s and %3$s %4$s (%5$s)</string>
+  <string name="default_message">Enter a place (zip code, SFO, etc) or tap The Umbrella to use your current location</string>
+  <string name="dinau_result">It\'s %1$s degrees, %2$s, and %3$s</string>
   <string name="error_message">Error: %1$s</string>
 </resources>
