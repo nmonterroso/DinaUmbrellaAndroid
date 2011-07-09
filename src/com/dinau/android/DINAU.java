@@ -150,12 +150,12 @@ public class DINAU extends RoboActivity {
     private void startLocationListener() {
     	try {
     		showMessage(MESSAGES_KEY_LOADING);
-    		Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    		Location lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     		if (isValidLocation(lastLocation)) {
     			locationListener.onLocationChanged(lastLocation);
     		}
     		else {
-    			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     		}
     	}
     	catch (Exception e) {
